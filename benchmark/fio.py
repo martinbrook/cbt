@@ -107,7 +107,7 @@ class Fio(Benchmark):
         elif self.endpoint_type == 'rbd':
             pool_name, rbd_name = self.endpoints[ep_num].split("/")
             cmd += ' --clientname=admin'
-            cmd += ' --pool=%s' % pool_name
+            cmd += ' --pool=%s-data' % pool_name
             cmd += ' --rbdname=%s' % rbd_name
             cmd += ' --invalidate=0'
             for proc_num in range(self.procs_per_endpoint):

@@ -86,11 +86,11 @@ class CephClientEndpoints(ClientEndpoints):
 
         self.cluster.rmpool(self.pool, self.pool_profile)
         self.cluster.mkpool(self.pool, self.pool_profile, 'rbd')
-        if self.data_pool_profile:
-            self.data_pool = '%s-data' % self.name
-            dp_option = '--data-pool %s' % self.data_pool
-            self.cluster.rmpool(self.data_pool, self.data_pool_profile)
-            self.cluster.mkpool(self.data_pool, self.data_pool_profile, 'rbd')
+#        if self.data_pool_profile:
+#            self.data_pool = '%s-data' % self.name
+#            dp_option = '--data-pool %s' % self.data_pool
+#            self.cluster.rmpool(self.data_pool, self.data_pool_profile)
+#            self.cluster.mkpool(self.data_pool, self.data_pool_profile, 'rbd')
 
         for node in common.get_fqdn_list('clients'):
             for ep_num in range(0, self.endpoints_per_client):
@@ -98,7 +98,9 @@ class CephClientEndpoints(ClientEndpoints):
 
                 # Make the RBD Image
                 cmd = '%s -c %s create %s --pool %s --size %s %s --order %s' % (self.rbd_cmd, self.tmp_conf, rbd_name, self.pool, self.endpoint_size, dp_option, self.order)
-                common.pdsh(settings.getnodes('head'), cmd, continue_if_error=False).communicate()
+#                common.pdsh(settings.getnodes('head'), cmd, continue_if_error=False).communicate()
+                self.cluster.mkimage(rbd_name, self.endpoint_size, self.data_pool, self.pool, self.order)
+
 
                 # Disable Features
                 if self.disabled_features:
@@ -109,10 +111,16 @@ class CephClientEndpoints(ClientEndpoints):
         self.pool = '%s-recov' % self.name
         self.cluster.rmpool(self.pool, self.recov_pool_profile)
         self.cluster.mkpool(self.pool, self.recov_pool_profile, 'rbd')
+        if self.data_pool_profile:
+            self.data_pool = '%s-data' % self.name
+            dp_option = '--data-pool %s' % self.data_pool
+            self.cluster.rmpool(self.data_pool, self.data_pool_profile)
+            self.cluster.mkpool(self.data_pool, self.data_pool_profile, 'rbd')
+
         for node in common.get_fqdn_list('clients'):
             for ep_num in range(0, self.endpoints_per_client):
                 rbd_name = '%s-%s' % (self.pool, self.get_rbd_name(node, ep_num))
-                self.cluster.mkimage(rbd_name, self.endpoint_size, self.pool, self.data_pool, self.order)
+                self.cluster.mkimage(rbd_name, self.endpoint_size, self.data_pool, self.pool, self.order)
 
     def mount_rbd(self):
         for ep_num in range(0, self.endpoints_per_client):
