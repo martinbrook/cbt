@@ -889,7 +889,7 @@ class Ceph(Cluster):
         # Unmap rbd, nbd, and clear the targetcli config
         common.pdsh(settings.getnodes('clients'), 'sudo find /dev/rbd* -maxdepth 0 -type b -exec %s unmap \'{}\' \\;' % self.rbd_cmd).communicate()
         common.pdsh(settings.getnodes('clients'), 'sudo find /dev/nbd* -maxdepth 0 -type b -exec %s unmap \'{}\' \\;' % self.rbd_nbd_cmd).communicate()
-        common.pdsh(settings.getnodes('clients'), 'sudo targetcli clearconfig confirm=True', continue_if_error=False).communicate()
+        #common.pdsh(settings.getnodes('clients'), 'sudo targetcli clearconfig confirm=True', continue_if_error=False).communicate()
 
     def get_urls(self):
         return self.urls
